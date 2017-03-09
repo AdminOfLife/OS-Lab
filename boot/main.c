@@ -1,5 +1,5 @@
-#include <inc/x86.h>
-#include <inc/elf.h>
+#include <include/x86.h>
+#include <include/elf.h>
 
 /**********************************************************************
  * This a dirt simple boot loader, whose sole job is to boot
@@ -122,4 +122,3 @@ readsect(void *dst, uint32_t offset)
 	// read a sector
 	insl(0x1F0, dst, SECTSIZE/4);
 }
-
