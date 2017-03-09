@@ -15,7 +15,7 @@ void init_all(){
 	init_serial();
 	init_i8259();
 	init_idt();
-	//init_timer();
+//	init_timer();
 //	init_vmem();
 }
 
