@@ -6,10 +6,11 @@
 void init_serial();
 void init_i8259();
 void init_idt();
-//void init_timer();
+void init_timer();
 //void init_vmem();
 
 void printk_test();
+void print_runtime();
 
 void init_all(){
 	init_serial();
@@ -23,6 +24,9 @@ int main(void) {
 	init_all();
 
 	printk("Here is main()\n");
+
+	printk_test();
+//	print_runtime();
 
 	sti();
 

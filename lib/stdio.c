@@ -43,7 +43,7 @@ void rec_out_num(unsigned int x, unsigned int base){
 void out_num(unsigned int x, unsigned int base, bool SIGN){
 	if( SIGN && ((int)x)<0 ){
 		serial_printc('-');
-		x = ~x;
+		x = ~x + 1;
 	}
 	rec_out_num(x, base);
 }

@@ -3,7 +3,7 @@
 
 int abort(const char* filename, int line) {
 	cli();
-	printk("%s,%d: Boom!\n", filename, line);
+	printk("%s,%d: Aborted.\n", filename, line);
 	while(1);
 	return 0;
 }
