@@ -13,7 +13,7 @@ static struct IRQ_t handle_pool[NR_IRQ_HANDLE];
 static struct IRQ_t *handles[NR_HARD_INTR]; // handles is an array of lists
 static int handle_count = 0;
 
-void do_syscall(TrapFrame *);
+void do_syscall(TrapFrame *tf);
 
 void add_irq_handle(int irq, void (*func)(void) ) {
 	// printk("%x %d\n", &handle_count, handle_count);
@@ -34,8 +34,10 @@ void irq_handle(TrapFrame *tf) {
 	int irq = tf->irq;
 	printk("interrupt #%d\n", irq);
 	/* TODO: int 0x80, system call */
-
-	if(irq < 1000) panic("Unhandled exception!\n");
+	if (irq == 0x80) {
+		do_syscall(tf);
+	}
+	else if(irq < 1000) panic("Unhandled exception!\n");
 	else {
 		int irq_id = irq - 1000;
 		assert(irq_id < NR_HARD_INTR);

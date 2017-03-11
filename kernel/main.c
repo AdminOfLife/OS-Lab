@@ -28,6 +28,8 @@ int main(void) {
 	printk_test();
 	print_runtime();
 
+	asm ("int $0x80");
+
 	sti();
 
 	assert(0); // should not get here
