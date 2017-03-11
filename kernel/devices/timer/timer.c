@@ -36,7 +36,7 @@ update_jiffy();
 void
 init_timer() {
 	int counter = PIT_FREQUENCE / HZ;
-	outb(PORT_CMD, mode.val);
+	outb(PORT_CMD, 0x34);
 	outb(PORT_CH_0, counter & 0xFF);         // access low byte
 	outb(PORT_CH_0, (counter >> 8) & 0xFF);  // access high byte
 	memset(&current_time, 0, sizeof(Time));
@@ -56,7 +56,8 @@ get_time(Time *tm) {
 void
 update_jiffy() {
 	jiffy ++;
-	if (jiffy % HZ == 0) {
+	if (jiffy == HZ) {
+		jiffy = 0;
 		current_time.second++;
 		if (current_time.second == 60) {
 			current_time.second = 0;
