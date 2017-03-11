@@ -23,14 +23,11 @@ void init_all(){
 int main(void) {
 	init_all();
 
-	printk("Here is main()\n");
+	sti();
 
 	printk_test();
+	
 	print_runtime();
-
-	asm ("int $0x80");
-
-	sti();
 
 	assert(0); // should not get here
 	return 0;
