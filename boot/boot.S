@@ -21,8 +21,8 @@ start:
   movw    %ax,%es             # -> Extra Segment
   movw    %ax,%ss             # -> Stack Segment
 
-  # Mode_ 13h
-  movw  $0x13, %ax
+  # Mode_ 3h
+  movw  $0x3, %ax
   int   $0x10
 
   # Enable A20:

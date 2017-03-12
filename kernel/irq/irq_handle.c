@@ -32,7 +32,7 @@ void irq_handle(TrapFrame *tf) {
 	//printk("irq_handle()\n");
 
 	int irq = tf->irq;
-	printk("interrupt #%d\n", irq);
+	if (irq != 1000) printk("interrupt #%d\n", irq);
 	/* TODO: int 0x80, system call */
 	if (irq == 0x80) {
 		do_syscall(tf);
