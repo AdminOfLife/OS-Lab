@@ -5,7 +5,7 @@
 
 void write_string(int color, const char *string) {
 	volatile char *video = (volatile char*)STRING_START;
-	while ( *string != 0) {
+	while (*string != 0) {
 		*video++ = *string++;
 		*video++ = color;
 	}

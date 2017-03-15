@@ -13,8 +13,7 @@ void init_keyboard();
 void printk_test();
 void print_runtime();
 
-void write_black_and_white(const char *string);
-void update_cursor(int row, int col);
+void game();
 
 void init_all(){
 	init_serial();
@@ -34,8 +33,7 @@ int main(void) {
 	
 	print_runtime();
 
-	write_black_and_white("2333");
-	update_cursor(0, 10);
+	game();
 	
 	while (1);
 	assert(0); // should not get here
