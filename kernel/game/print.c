@@ -2,6 +2,7 @@
 #include <include/stdio.h>
 #include "inc.h"
 
+void reset_new_key();
 char get_key();
 void update_cursor(int row, int col);
 bool check_new_key();
@@ -50,7 +51,7 @@ void back_space() {
 	*((char *)STRING_START + seek) = 0;
 	seek--;
 	*((char *)STRING_START + seek) = 0;
-	update_cursor(seek / COL / 2, seek % (COL * 2) / 2);
+	//update_cursor(seek / COL / 2, seek % (COL * 2) / 2);
 }
 
 void print_string(int color, char *st) {
@@ -83,6 +84,7 @@ void wait_input() {
 	len = 0;
 	print_string(BLACK_AND_WHITE, "> ");
 	while (1) {
+		reset_new_key();
 		while (!check_new_key())
 			;
 		c = get_key();
@@ -105,7 +107,7 @@ void wait_input() {
 	len--;
 	ans[len] = 0;
 	process_ans();
-	// printk("%s\n", ans);
+	 printk("%s\n", ans);
 }
 
 void put_key() {

@@ -1,13 +1,11 @@
 #include <include/x86.h>
 #include <include/elf.h>
-//#include "boot.h"
 
 #define SECTSIZE 512
 
 void readseg(unsigned char*,int,int);
 
-int bootmain(void)
-{
+int bootmain(void) {
 	struct Elf *elf;
 	struct Proghdr *ph, *eph;
 	unsigned char *pa, *i;
@@ -28,9 +26,6 @@ int bootmain(void)
 
 	while(1);
 }
-
-
-
 
 void waitdisk(void) {
 	while((inb(0x1f7) & 0xc0) != 0x40);

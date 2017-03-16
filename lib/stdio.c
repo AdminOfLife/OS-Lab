@@ -5,7 +5,7 @@ void serial_printc(char);
 void out_num(unsigned, unsigned, bool);
 void out_string(char*);
 
-int printk(const char *fmt, ...){
+int printk(const char *fmt, ...) {
 	//char ch = *(unsigned char *)fmt;
 	va_list ap;
 
@@ -33,22 +33,22 @@ int printk(const char *fmt, ...){
 	return 0;
 }
 
-void rec_out_num(unsigned int x, unsigned int base){
+void rec_out_num(unsigned int x, unsigned int base) {
 	if(x >= base){
 		rec_out_num(x/base, base);
 	}
-	serial_printc("0123456789abcdef"[x%base]);
+	serial_printc("0123456789abcdef"[x % base]);
 }
 
-void out_num(unsigned int x, unsigned int base, bool SIGN){
-	if( SIGN && ((int)x)<0 ){
+void out_num(unsigned int x, unsigned int base, bool SIGN) {
+	if( SIGN && ((int)x) < 0 ){
 		serial_printc('-');
 		x = ~x + 1;
 	}
 	rec_out_num(x, base);
 }
 
-void out_string(char *s){
+void out_string(char *s) {
 	while(*s){
 		serial_printc(*s);
 		s++;

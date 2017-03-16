@@ -18,8 +18,12 @@ static int letter_code[] = {
 static char last_scancode = 0;
 static bool is_new_key = 0;
 
+void reset_new_key() {
+	is_new_key = 0;
+}
+
 bool check_new_key() {
-	return is_new_key && last_scancode > 0;
+	return is_new_key;
 }
 
 char get_key() {
@@ -41,8 +45,11 @@ char get_scancode() {
 	//		if (c > 0) return c;
 	//	}
 	//} while (1);
-	last_scancode = inb(0x60);
-	is_new_key = 1;
+	char tmp = inb(0x60);
+	if (tmp >= 0) {
+		last_scancode = tmp;
+		is_new_key = 1;
+	}
 	return last_scancode;
 }
 
