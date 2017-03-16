@@ -30,8 +30,6 @@ int main(void) {
 	sti();
 
 	printk_test();
-	
-	print_runtime();
 
 	game();
 	
