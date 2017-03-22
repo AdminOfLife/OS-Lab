@@ -54,8 +54,9 @@ char get_scancode() {
 }
 
 void print_scancode() {
-	char c = get_scancode();
-	printk("Scancode: %d\n", c);
+	get_scancode();
+	// char c = get_scancode();
+	// printk("Scancode: %d\n", c);
 }
 
 void init_keyboard() {
