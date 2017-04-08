@@ -1,7 +1,12 @@
-#include <include/string.h>
-#include <include/stdio.h>
+#include <usr_inc/string.h>
+#include <usr_inc/stdio.h>
+#include <usr_inc/screen.h>
 #include "inc.h"
 
+
+static int seek = 0;
+
+/*
 void reset_new_key();
 char get_key();
 void update_cursor(int row, int col);
@@ -15,55 +20,21 @@ char look_up[256] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 '\n', BACK_SPACE,
 '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-
-void scroll() {
-	// printk("%d\n", seek);
-	seek -= COL * 2;
-	for (int i = 1; i < ROW - 1; i++) { // First line reserved
-		for (int j = 0; j < COL; j++) {
-			*((char *)STRING_START + (i * COL + j) * 2) = *((char *)STRING_START + ((i + 1) * COL + j) * 2);
-			*((char *)STRING_START + (i * COL + j) * 2 + 1) = *((char *)STRING_START + ((i + 1) * COL + j) * 2 + 1);
-		}
-	}
-	for (int j = 0; j < COL; j++) {
-		*((char *)STRING_START + ((ROW - 1) * COL + j) * 2) = 0;
-		*((char *)STRING_START + ((ROW - 1) * COL + j) * 2 + 1) = 0;
-	}
-	// printk("%d\n", seek);
-}
-
-void print_char(int color, char c) {
-	if (c != '\n') {
-		*((char *)STRING_START + seek) = c;
-		seek++;
-		*((char *)STRING_START + seek) = color;
-		seek++;
-		if (seek >= COL * ROW * 2) scroll();
-	}
-	else {
-		seek = seek / (2 * COL) * (2 * COL) + 2 * COL;
-		if (seek >= COL * ROW * 2) scroll();
-	}
-}
-
-void back_space() {
-	seek--;
-	*((char *)STRING_START + seek) = 0;
-	seek--;
-	*((char *)STRING_START + seek) = 0;
-	//update_cursor(seek / COL / 2, seek % (COL * 2) / 2);
-}
+*/
 
 void print_string(int color, char *st) {
 	// printk("%s\n", st);
 	char c = *st;
 	while (c) {
-		print_char(color, c);
+		seek = print_char(seek, c, color);
 		st++;
 		c = *st;
+		// printk("seek = %d\n", seek);
 	}
-	update_cursor(seek / COL / 2, seek % (COL * 2) / 2);
+	// update_cursor(seek / COL / 2, seek % (COL * 2) / 2);
 }
+
+/*
 
 void process_ans() {
 	for (int i = 0; i < len; i++) {
@@ -114,3 +85,4 @@ void put_key() {
 	char c = get_key();
 	c++;
 }
+*/

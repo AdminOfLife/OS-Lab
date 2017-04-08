@@ -1,3 +1,6 @@
+#include <include/stdio.h>
+
+
 #define STRING_START (0xF0000000 + 0xB8000)
 #define BLACK_AND_WHITE (0x0F)
 #define COL (80)
@@ -18,7 +21,7 @@ int scroll(int seek) {
 		*((char *)STRING_START + ((ROW - 1) * COL + j) * 2 + 1) = 0;
 	}
 	// printk("%d\n", seek);
-	return seek;	
+	return seek;
 }
 
 int print_char(int seek, char c, int color) {
@@ -33,6 +36,7 @@ int print_char(int seek, char c, int color) {
 		seek = seek / (2 * COL) * (2 * COL) + 2 * COL;
 		if (seek >= COL * ROW * 2) seek = scroll(seek);
 	}
+	printk("%d %d %d\n", seek, c, color);
 	return seek;
 }
 
