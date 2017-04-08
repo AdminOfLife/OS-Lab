@@ -2,6 +2,7 @@
 #include <usr_inc/string.h>
 #include <usr_inc/stdio.h>
 #include <usr_inc/time.h>
+#include <usr_inc/timer.h>
 
 char intro[] = "Welcome to Hatsuyuki OS. Hatsuyuki (the author of this OS) is obsessed with riddles and cannot continue working on it. Solve the 5 riddles and she will be back on work. Be quick!\n\nTo answer a riddle, type in the answer and press ENTER. Every answer is either a word (or a single letter) or a number. The riddles will be given one by one. If you really want know the answer, type in \"cheat.\"\n\n";
 
@@ -36,34 +37,18 @@ char answer_wrong[] = "Wrong answer. Try again.\n";
 char cheat[] = "cheat";
 char congrat[] = "Congratulations! Now Hatsuyuki is back on work.\n";
 
-// extern char ans[MAX_LEN];
+extern char ans[MAX_LEN];
 
-// void print_time();
 void print_string(int color, char *st);
-// void wait_input();
+void wait_input();
 
-// extern Time current_time;
-Time start_time;
-// static bool game_completed = 0;
-/*
-void update_ingame_time() {
-	if (game_completed) return;
-	int interval = current_time.minute * 60 + current_time.second - start_time.minute * 60 - start_time.second;
-	*((char *)STRING_START + 24) = '0' + interval / 600;
-	interval -= interval / 600 * 600;
-	*((char *)STRING_START + 26) = '0' + interval / 60;
-	interval -= interval / 60 * 60;
-	*((char *)STRING_START + 30) = '0' + interval / 10;
-	*((char *)STRING_START + 32) = '0' + interval % 10;
-}
-*/
+long start_time;
 
 void game() {
-	// start_time = current_time;
-	// update_ingame_time();
+	start_time = get_time();
+	printk("Game Start!\n");
 	print_string(BLACK_AND_WHITE, remaining_time);
 	print_string(BLACK_AND_WHITE, intro);
-	/*
 	for (int i = 0; i < 5; i++) {
 		print_string(BLACK_AND_WHITE, riddles[i]);
 		while (1) {
@@ -80,8 +65,7 @@ void game() {
 		}
 		print_string(BLACK_AND_WHITE, "\n");
 	}
-	game_completed = 1;
 	print_string(BLACK_AND_WHITE, congrat);
-	*/
-	//wait_input();
+	while (1)
+		;
 }

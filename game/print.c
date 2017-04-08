@@ -1,26 +1,21 @@
 #include <usr_inc/string.h>
 #include <usr_inc/stdio.h>
 #include <usr_inc/screen.h>
+#include <usr_inc/keyboard.h>
+#include <usr_inc/timer.h>
 #include "inc.h"
 
 
 static int seek = 0;
-
-/*
-void reset_new_key();
-char get_key();
-void update_cursor(int row, int col);
-bool check_new_key();
-
-static int seek = 0;
 char ans[MAX_LEN];
 static int len = 0;
+extern long start_time;
 
 char look_up[256] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-'\n', BACK_SPACE,
+'\n', BACKSPACE,
 '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-*/
+
 
 void print_string(int color, char *st) {
 	// printk("%s\n", st);
@@ -31,10 +26,8 @@ void print_string(int color, char *st) {
 		c = *st;
 		// printk("seek = %d\n", seek);
 	}
-	// update_cursor(seek / COL / 2, seek % (COL * 2) / 2);
+	update_cursor(seek / COL / 2, seek % (COL * 2) / 2);
 }
-
-/*
 
 void process_ans() {
 	for (int i = 0; i < len; i++) {
@@ -54,22 +47,23 @@ void wait_input() {
 	char c;
 	len = 0;
 	print_string(BLACK_AND_WHITE, "> ");
+	// while (1);
 	while (1) {
-		reset_new_key();
 		while (!check_new_key())
-			;
+			update_time(start_time);
 		c = get_key();
 		char c_translated = look_up[(int)c];
-		if (c_translated == BACK_SPACE) {
+		if (c_translated == BACKSPACE) {
 			if (len) {
 				len--;
-				back_space();
+				seek = back_space(seek);
 			}
 		}
 		else if (len < MAX_LEN - 1) {
+			char tmp_string[2] = {c_translated, 0};
 			ans[len] = c_translated;
 			len++;
-			print_char(BLACK_AND_WHITE, c_translated);
+			print_string(BLACK_AND_WHITE, tmp_string);
 		}
 		update_cursor(seek / COL / 2, seek % (COL * 2) / 2);
 		if (c_translated == '\n') break;
@@ -78,11 +72,5 @@ void wait_input() {
 	len--;
 	ans[len] = 0;
 	process_ans();
-	 printk("%s\n", ans);
+	printk("The input is \"%s.\"\n", ans);
 }
-
-void put_key() {
-	char c = get_key();
-	c++;
-}
-*/

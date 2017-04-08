@@ -3,5 +3,7 @@
 
 
 int print_char(int, char, int);
+void update_cursor(int, int);
+int back_space(int);
 
 #endif

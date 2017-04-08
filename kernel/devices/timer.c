@@ -45,7 +45,7 @@ init_timer() {
 	add_irq_handle(TIME_IRQ, update_jiffy);
 }
 
-inline long
+long
 get_jiffy() {
 	return jiffy;
 }
@@ -57,11 +57,10 @@ get_time(Time *tm) {
 
 void
 update_jiffy() {
-	jiffy ++;
+	jiffy++;
 	if (jiffy == HZ) {
 		jiffy = 0;
 		current_time.second++;
-		// update_ingame_time();
 		if (current_time.second == 60) {
 			current_time.second = 0;
 			current_time.minute ++;

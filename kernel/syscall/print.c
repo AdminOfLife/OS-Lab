@@ -1,4 +1,5 @@
 #include <include/stdio.h>
+#include <include/time.h>
 
 
 #define STRING_START (0xF0000000 + 0xB8000)
@@ -36,7 +37,7 @@ int print_char(int seek, char c, int color) {
 		seek = seek / (2 * COL) * (2 * COL) + 2 * COL;
 		if (seek >= COL * ROW * 2) seek = scroll(seek);
 	}
-	printk("%d %d %d\n", seek, c, color);
+	// printk("%d %d %d\n", seek, c, color);
 	return seek;
 }
 
@@ -46,4 +47,16 @@ int back_space(int seek) {
 	seek--;
 	*((char *)STRING_START + seek) = 0;
 	return seek;
+}
+
+extern Time current_time;
+
+void update_time(long start_time) {
+	int interval = current_time.minute * 60 + current_time.second - start_time / HZ;
+	*((char *)STRING_START + 24) = '0' + interval / 600;
+	interval -= interval / 600 * 600;
+	*((char *)STRING_START + 26) = '0' + interval / 60;
+	interval -= interval / 60 * 60;
+	*((char *)STRING_START + 30) = '0' + interval / 10;
+	*((char *)STRING_START + 32) = '0' + interval % 10;
 }

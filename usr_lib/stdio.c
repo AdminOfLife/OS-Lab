@@ -2,8 +2,6 @@
 #include <usr_inc/syscall.h>
 
 
-#define PRINT_TO_TERMINAL 3
-
 static char user_space_message[] = "User Printing: ";
 
 static void printc(char);
