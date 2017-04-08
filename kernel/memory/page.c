@@ -56,16 +56,8 @@ void set_user_page(PCB *current) {
 	for (pdir_idx = 0; pdir_idx < 0x400000 / PTSIZE; pdir_idx++) {
 		pdir[pdir_idx] = (pde_t)(&ptable[pdir_idx * NPDENTRIES]) | PTE_P | PTE_W;
 		pdir[pdir_idx + KERNBASE / PTSIZE] = (pde_t)(&ptable[pdir_idx * NPDENTRIES]) | PTE_P | PTE_W;
-		printk("%x\n", pdir[pdir_idx]);
 	}
 	printk("Current User Page Dir: 0x%x\n", va2pa(pdir));
-	/*	
-	for(pdir_idx = PADDR / PTSIZE; pdir_idx < (PADDR + PSIZE) / PTSIZE; pdir_idx ++) {
-		pdir[pdir_idx] = (pde_t)(&ptable[MAX_MEM / PGSIZE + (pdir_idx - PADDR / PTSIZE) * NPDENTRIES]) | PTE_P | PTE_W;
-//		printk("%x\n", pdir[pdir_idx]);
-		ptable += NPDENTRIES;
-	}
-	*/
 }
 
 void init_page() {

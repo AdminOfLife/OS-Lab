@@ -20,13 +20,11 @@ void sys_printf(TrapFrame *tf) {
 }
 
 void do_syscall(TrapFrame *tf) {
-	/*
 	switch(tf->eax) {
-		case GET_KEY: sys_write(tf); break;
-		case PRINT_CHAR: sys_palette(tf); break;
-		case PRINT_TO_TERMINAL: sys_kbd(tf); break;
-		case GET_TIME: tf->eax = Get_time(); break;
+		// case GET_KEY: sys_write(tf); break;
+		// case PRINT_CHAR: sys_palette(tf); break;
+		case PRINT_TO_TERMINAL: printk("%c", tf->ebx); break;
+		// case GET_TIME: tf->eax = Get_time(); break;
 		default: panic("Unexpected Sys Call ID: %d\n", tf->eax);
 	}
-	*/
 }

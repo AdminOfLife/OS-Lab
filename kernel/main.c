@@ -9,7 +9,6 @@
 
 #define OFFSET_IN_DISK (1000 * 1024)
 #define USER_STACK_TOP 0x8000000
-#define USER_STACK_SIZE 0x400000
 
 void set_tss_esp0(int);
 void set_segment(SegDesc *ptr, uint32_t pl, uint32_t type, uint32_t base, uint32_t limit);
@@ -47,6 +46,7 @@ int kern_init() {
 	init_memory();			// init memory organize
 
 	print_char(0, 'V', 0x0f);
+	/* indicates a successful initialization of virtual memory and devices */
 
 	load();					// load program
 
@@ -63,6 +63,7 @@ void load() {
 
 	elf = (struct Elf*)(0x8000);
 
+	printk("ELF Magical Number: 0x%x, should be equal to 0x464c457f\n", *elf);
 
 	readseg((unsigned char*)elf, 4096, OFFSET_IN_DISK);
 
@@ -70,23 +71,11 @@ void load() {
 	eph = ph + elf->e_phnum;
 	for (; ph < eph; ph++) {
 		if(ph->p_type != ELF_PROG_LOAD) continue;
-		// printk("%x %x\n", ph, eph);
-		pa = (unsigned char *)seg_alloc(ph->p_va, current);
+		seg_alloc(ph->p_va, current);
 		pa = (unsigned char *)page_alloc(ph->p_va, ph->p_memsz, current);
-
-		printk("%x\n", ph->p_va);
-
 		readprog(ph->p_va, ph->p_filesz, ph->p_memsz, current, pa, OFFSET_IN_DISK + ph->p_offset);
-		printk("pa: %x\n", ph->p_offset);
-		printk("%x\n", elf->e_entry);
-		// for (i = pa + ph->p_filesz; i < pa + ph->p_memsz; *i ++ = 0);
 	}
 
-	printk("elf: %x\n", *elf);
-	
-	printk("PA: %x\n", *(char *)0x06000000);
-	*(char *)(0x06000000) = 10;
-	printk("PA: %x\n", *(char *)0x06000000);
 	printk("Filling the Trap Frame (still in Kernel Mode).\n");
 
 	TrapFrame *tf = &current->tf;
@@ -101,21 +90,7 @@ void load() {
 
 	printk("Ready to enter the game (User Mode).\n");
 
-	printk("%x\n", va2pa(current->pdir));
-	printk("%x\n", rcr3());
-
-
 	lcr3(va2pa(current->pdir));
-
-	printk("%x %x\n", *(char *)0x08000000, elf->e_entry);
-	*(char *)0x08000000 = 0x55;
-	printk("%x %x\n", *(char *)0x08000000, elf->e_entry);
-	// printk("%x\n", rcr3());
-
-	printk("Should not get here.\n");
-	printk("%x\n", rcr3());
-	// while (1);
-	/* Should not get here. */
 
 	asm volatile("movl %0, %%esp" : :"a"((int)tf));
 	asm volatile("popa");

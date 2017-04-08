@@ -1,4 +1,4 @@
-#include <include/stdio.h>
+#include <usr_inc/stdio.h>
 
 int game() {
 	printk("233\n");
