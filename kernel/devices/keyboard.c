@@ -37,7 +37,7 @@ char get_key() {
     return 0xff;
 }
 
-char get_scancode() {
+void get_scancode() {
 	//char c = 0;
 	//do {
 	//	if (inb(0x60) != c) {
@@ -50,15 +50,8 @@ char get_scancode() {
 		last_scancode = tmp;
 		is_new_key = 1;
 	}
-	return last_scancode;
-}
-
-void print_scancode() {
-	get_scancode();
-	// char c = get_scancode();
-	// printk("Scancode: %d\n", c);
 }
 
 void init_keyboard() {
-	add_irq_handle(KEYBOARD_IRQ, print_scancode);
+	add_irq_handle(KEYBOARD_IRQ, get_scancode);
 }

@@ -317,4 +317,22 @@ hlt(void)
 	__asm __volatile("hlt");
 }
 
+static inline void
+write_gdtr(void *addr, uint32_t size) {
+	static volatile uint16_t data[3];
+	data[0] = size - 1;
+	data[1] = (uint32_t)addr;
+	data[2] = ((uint32_t)addr) >> 16;
+	asm volatile("lgdt (%0)" : : "r"(data));
+}
+
+static inline void
+write_idtr(void *addr, uint32_t size) {
+	static volatile uint16_t data[3];
+	data[0] = size - 1;
+	data[1] = (uint32_t)addr;
+	data[2] = ((uint32_t)addr) >> 16;
+	asm volatile("lidt (%0)" : : "r"(data));
+}
+
 #endif /* __X86_H__ */

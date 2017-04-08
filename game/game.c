@@ -42,7 +42,7 @@ void print_time();
 void print_string(int color, char *st);
 void wait_input();
 
-extern Time current_time;
+// extern Time current_time;
 Time start_time;
 static bool game_completed = 0;
 
@@ -58,7 +58,7 @@ void update_ingame_time() {
 }
 
 void game() {
-	start_time = current_time;
+	// start_time = current_time;
 	update_ingame_time();
 	print_string(BLACK_AND_WHITE, remaining_time);
 	print_string(BLACK_AND_WHITE, intro);

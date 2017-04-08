@@ -1,32 +1,20 @@
-#ifndef __MEMORY_H__
-#define __MEMORY_H__
+#ifndef KERN_INC_MEM
+#define KERN_INC_MEM
 
-#include "x86/x86.h"
-#include "process.h"
+#include <include/list.h>
 
-#define KOFFSET 0xC0000000
+#define MAX_MEM 0x20000000
+#define USER_STACK_TOP 0x8000000
+#define USER_STACK_SIZE 0x400000
 
-inline CR3* get_kcr3();
-inline PDE* get_kpdir();
-inline PTE* get_kptable();
+typedef struct {
+	uint32_t base, limit, cs, ds;
+	ListHead list;
+} SegMan;
 
-void make_invalid_pde(PDE *);
-void make_invalid_pte(PTE *);
-void make_pde(PDE *, void *);
-void make_pte(PTE *, void *);
-uint32_t pcb_va_to_pa(PCB* pcb, uint32_t va);
-bool is_invalid_pte(PTE *);
-bool is_invalid_pde(PDE *);
-#define va_to_pa(addr) \
-	((void*)(((uint32_t)(addr)) - KOFFSET))
-
-#define pa_to_va(addr) \
-	((void*)(((uint32_t)(addr)) + KOFFSET))
-
-/* the maxinum kernel size is 16MB */
-#define KMEM    (16 * 1024 * 1024)
-
-/* Nanos has 128MB physical memory  */
-#define PHY_MEM   (128 * 1024 * 1024)
+typedef struct {
+	uint32_t addr;
+	ListHead list;
+} PgMan;
 
 #endif

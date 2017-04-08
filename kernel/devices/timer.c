@@ -25,7 +25,7 @@ union CmdByte mode = {
 	.channel      = 0,  // use channel 0
 };
 
-void update_ingame_time();
+// void update_ingame_time();
 
 Time current_time;
 long jiffy = 0;
@@ -61,7 +61,7 @@ update_jiffy() {
 	if (jiffy == HZ) {
 		jiffy = 0;
 		current_time.second++;
-		update_ingame_time();
+		// update_ingame_time();
 		if (current_time.second == 60) {
 			current_time.second = 0;
 			current_time.minute ++;

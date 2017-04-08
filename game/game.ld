@@ -1,23 +1,27 @@
 OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
 OUTPUT_ARCH(i386)
-ENTRY(_start)
+ENTRY(game_main)
 
 SECTIONS
 {
-	/* Link the kernel at this address: "." means the current address */
-	. = 0xf0100000;
+/*	. = 0x2000000;*/
+	. = 0x8000000;
 
-	/* AT(...) gives the load address of this section, which tells
-	   the boot loader where to load the kernel in physical memory */
-	.text : AT(0x100000) {
+	.text : {
 		*(.text .stub .text.* .gnu.linkonce.t.*)
 	}
 
+}
+SECTIONS
+{
+	/*. = 0x2000000;*/
+
+	. = ALIGN(0x1000);
+/*	. += 0x2000;*/
 	.rodata : {
 		*(.rodata .rodata.* .gnu.linkonce.r.*)
 	}
 
-	/* Include debugging information in kernel memory */
 	.stab : {
 		PROVIDE(__STAB_BEGIN__ = .);
 		*(.stab);
@@ -34,10 +38,8 @@ SECTIONS
 				   for this section */
 	}
 
-	/* Adjust the address for the data segment to the next page */
 	. = ALIGN(0x1000);
 
-	/* The data segment */
 	.data : {
 		*(.data)
 	}

@@ -35,6 +35,7 @@ static void set_trap(Gatedesc *ptr, uint32_t selector, uint32_t offset, uint32_t
 	ptr->gd_off_31_16 = (offset >> 16) & 0xFFFF;
 }
 
+/*
 static void write_idtr(void *addr, uint32_t size) {
 	static volatile uint16_t data[3];
 	data[0] = size - 1;
@@ -42,6 +43,7 @@ static void write_idtr(void *addr, uint32_t size) {
 	data[2] = ((uint32_t)addr) >> 16;
 	lidt((void*)data);
 }
+*/
 
 void irq0();
 void irq1();
