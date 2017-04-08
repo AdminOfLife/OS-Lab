@@ -32,12 +32,11 @@ void irq_handle(TrapFrame *tf) {
 	//printk("irq_handle()\n");
 
 	int irq = tf->irq;
-	// if (irq != 1000) printk("interrupt #%d\n", irq);
-	/* TODO: int 0x80, system call */
 	if (irq == 0x80) {
 		do_syscall(tf);
 	}
-	else if(irq < 1000) panic("Unhandled exception!\n");
+	else if(irq == 0xe);	// disk dxception
+	else if(irq < 1000) panic("Unhandled exception. ID = 0x%x!\n", irq);
 	else {
 		int irq_id = irq - 1000;
 		assert(irq_id < NR_HARD_INTR);

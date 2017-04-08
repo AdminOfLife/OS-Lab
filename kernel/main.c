@@ -7,7 +7,7 @@
 #include <include/disk.h>
 #include <include/memory.h>
 
-#define OFFSET_IN_DISK (1000*1024)
+#define OFFSET_IN_DISK (1000 * 1024)
 #define USER_STACK_TOP 0x8000000
 #define USER_STACK_SIZE 0x400000
 
@@ -31,12 +31,13 @@ void init_memory();
 
 void load();
 
+int print_char(int seek, char c, int color);
+
 int kern_init() {
 	set_kern_page();		// set page for kernel
-	while(1);
 	set_kern_segment();		// set segment register for kernel
 
-	init_serial();			// init interrupts
+	init_serial();			// init interrupts and devices
 	init_i8259();
 	init_idt();
 	init_timer();
@@ -45,9 +46,11 @@ int kern_init() {
 	init_process();			// init PCB pointer
 	init_memory();			// init memory organize
 
-//	load();					// load program
+	print_char(0, 'V', 0x0f);
 
-	while(1);
+	load();					// load program
+
+	while (1);
 	return 0;
 }
 
@@ -56,21 +59,34 @@ void load() {
 	set_user_page(current);
 	struct Elf *elf;
 	struct Proghdr *ph, *eph;
-	unsigned char* pa;
+	unsigned char *pa;
 
-	elf = (struct Elf*)(0x0019000);
+	elf = (struct Elf*)(0x8000);
+
 
 	readseg((unsigned char*)elf, 4096, OFFSET_IN_DISK);
 
 	ph = (struct Proghdr*)((uint8_t *)elf + elf->e_phoff);
 	eph = ph + elf->e_phnum;
-	for(; ph < eph; ph ++) {
+	for (; ph < eph; ph++) {
 		if(ph->p_type != ELF_PROG_LOAD) continue;
+		// printk("%x %x\n", ph, eph);
 		pa = (unsigned char *)seg_alloc(ph->p_va, current);
 		pa = (unsigned char *)page_alloc(ph->p_va, ph->p_memsz, current);
+
+		printk("%x\n", ph->p_va);
+
 		readprog(ph->p_va, ph->p_filesz, ph->p_memsz, current, pa, OFFSET_IN_DISK + ph->p_offset);
+		printk("pa: %x\n", ph->p_offset);
+		printk("%x\n", elf->e_entry);
+		// for (i = pa + ph->p_filesz; i < pa + ph->p_memsz; *i ++ = 0);
 	}
+
+	printk("elf: %x\n", *elf);
 	
+	printk("PA: %x\n", *(char *)0x06000000);
+	*(char *)(0x06000000) = 10;
+	printk("PA: %x\n", *(char *)0x06000000);
 	printk("Filling the Trap Frame (still in Kernel Mode).\n");
 
 	TrapFrame *tf = &current->tf;
@@ -84,12 +100,23 @@ void load() {
 	page_alloc(USER_STACK_TOP - USER_STACK_SIZE, USER_STACK_SIZE, current);
 
 	printk("Ready to enter the game (User Mode).\n");
+
+	printk("%x\n", va2pa(current->pdir));
+	printk("%x\n", rcr3());
+
+
 	lcr3(va2pa(current->pdir));
 
-	while (1);
+	printk("%x %x\n", *(char *)0x08000000, elf->e_entry);
+	*(char *)0x08000000 = 0x55;
+	printk("%x %x\n", *(char *)0x08000000, elf->e_entry);
+	// printk("%x\n", rcr3());
+
+	printk("Should not get here.\n");
+	printk("%x\n", rcr3());
+	// while (1);
 	/* Should not get here. */
 
-	/*
 	asm volatile("movl %0, %%esp" : :"a"((int)tf));
 	asm volatile("popa");
 	asm volatile("addl %0, %%esp" : :"a"(8));
@@ -100,5 +127,4 @@ void load() {
 				 "movl %eax, %fs\n\t"
 				 "movl %eax, %gs\n\t");
 	asm volatile("iret");
-	*/
 }

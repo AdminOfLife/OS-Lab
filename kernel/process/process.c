@@ -8,7 +8,7 @@ ListHead unused_pcb;
 void init_process() {
 	list_init(&pcb_head);
 	list_init(&unused_pcb);
-	for(int i = 0; i < NR_PCB; ++ i) {
+	for(int i = 0; i < NR_PCB; i++) {
 		pcb[i].p = false;
 		list_add_after(&unused_pcb, &pcb[i].list);
 	}
@@ -22,7 +22,7 @@ PCB *new_process() {
 	return list_entry(new_pcb, PCB, list);
 }
 
-void Free_process(PCB *val) {
+void free_process(PCB *val) {
 	list_del(&val->list);
 	list_add_after(&pcb_head, &val->list);
 }

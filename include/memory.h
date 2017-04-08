@@ -3,7 +3,7 @@
 
 #include <include/list.h>
 
-#define MAX_MEM 0x20000000
+#define MAX_MEM 0x10000000
 #define USER_STACK_TOP 0x8000000
 #define USER_STACK_SIZE 0x400000
 

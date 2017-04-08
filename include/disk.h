@@ -30,7 +30,7 @@ void readseg(unsigned char *pa, int count, int offset) {
 	epa = pa + count;
 	pa -= offset % SECTSIZE;
 	offset = (offset / SECTSIZE) + 1;
-	for(; pa < epa; pa += SECTSIZE, offset ++)
+	for(; pa < epa; pa += SECTSIZE, offset++)
 		readsect(pa, offset);
 }
 

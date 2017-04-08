@@ -1,4 +1,4 @@
-#define STRING_START (0xB8000)
+#define STRING_START (0xF0000000 + 0xB8000)
 #define BLACK_AND_WHITE (0x0F)
 #define COL (80)
 #define ROW (25)

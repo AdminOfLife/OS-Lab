@@ -1,6 +1,6 @@
 OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
 OUTPUT_ARCH(i386)
-ENTRY(game_main)
+ENTRY(game)
 
 SECTIONS
 {
@@ -17,7 +17,7 @@ SECTIONS
 	/*. = 0x2000000;*/
 
 	. = ALIGN(0x1000);
-/*	. += 0x2000;*/
+	/*	. += 0x2000;*/
 	.rodata : {
 		*(.rodata .rodata.* .gnu.linkonce.r.*)
 	}
