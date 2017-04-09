@@ -17,7 +17,7 @@ void init_memory() {
 	init_page();
 }
 
-uint32_t seg_alloc(uint32_t vaddr, PCB* current) {
+uint32_t page_alloc(uint32_t vaddr, uint32_t size, PCB* current) {
 	SegMan *tmp = get_free_seg();
 	uint32_t offset = 0;
 	set_segment(&gdt[tmp->cs], DPL_USER, SEG_EXECUTABLE | SEG_READABLE, offset, tmp->limit);
@@ -25,10 +25,7 @@ uint32_t seg_alloc(uint32_t vaddr, PCB* current) {
 	current->tf.cs = SELECTOR_USER(tmp->cs);
 	current->tf.ds = current->tf.ss = current->tf.es =
 	current->tf.fs = current->tf.gs = SELECTOR_USER(tmp->ds);
-	return tmp->base;
-}
-
-uint32_t page_alloc(uint32_t vaddr, uint32_t size, PCB* current) {
+	printk("User CS: 0x%x\nUser DS: 0x%x\n", tmp->cs, tmp->ds);
 	pde_t *pdir = current->pdir;
 	uint32_t pdir_idx;
 	for(pdir_idx = vaddr / PTSIZE; pdir_idx < (vaddr + size + PTSIZE) / PTSIZE; ++ pdir_idx) {

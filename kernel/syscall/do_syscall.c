@@ -5,6 +5,7 @@
 #include <include/string.h>
 #include <include/stdio.h>
 #include <include/mmu.h>
+#include <include/x86.h>
 
 
 bool check_new_key();

@@ -64,12 +64,15 @@ void init_page() {
 	pte_t *ptable = (pte_t *)va2pa(uptable);
 	
 	int32_t pframe_addr;
+
+	/*
 	for (pframe_addr = 0; pframe_addr < 0x400000; pframe_addr += PGSIZE) {
 		*ptable = (pte_t)pframe_addr | PTE_P | PTE_W;
 		ptable ++;
 	}
+	*/
 
-	for (pframe_addr = 0x400000; pframe_addr < MAX_MEM; pframe_addr += PGSIZE) {
+	for (pframe_addr = 0; pframe_addr < MAX_MEM; pframe_addr += PGSIZE) {
 		*ptable = (pte_t)pframe_addr | PTE_P | PTE_W | PTE_U;
 		ptable ++;
 	}

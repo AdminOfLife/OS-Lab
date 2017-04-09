@@ -42,6 +42,8 @@ int kern_init() {
 	init_timer();
 	init_keyboard();
 
+	printk("Initialization of Interrupts and Devices Finished.");
+
 	init_process();			// init PCB pointer
 	init_memory();			// init memory organize
 
@@ -55,13 +57,15 @@ int kern_init() {
 }
 
 void load() {
-	PCB *current = new_process();
-	set_user_page(current);
+	PCB *current_process = new_process();
+	set_user_page(current_process);
 	struct Elf *elf;
 	struct Proghdr *ph, *eph;
 	unsigned char *pa;
 
 	elf = (struct Elf*)(0x8000);
+
+	printk("Loading the game from the disk\n");
 
 	printk("ELF Magical Number: 0x%x, should be equal to 0x464c457f\n", *elf);
 
@@ -71,26 +75,30 @@ void load() {
 	eph = ph + elf->e_phnum;
 	for (; ph < eph; ph++) {
 		if(ph->p_type != ELF_PROG_LOAD) continue;
-		seg_alloc(ph->p_va, current);
-		pa = (unsigned char *)page_alloc(ph->p_va, ph->p_memsz, current);
-		readprog(ph->p_va, ph->p_filesz, ph->p_memsz, current, pa, OFFSET_IN_DISK + ph->p_offset);
+		// seg_alloc(ph->p_va, current_process);
+		pa = (unsigned char *)page_alloc(ph->p_va, ph->p_memsz, current_process);
+		readprog(ph->p_va, ph->p_filesz, ph->p_memsz, current_process, pa, OFFSET_IN_DISK + ph->p_offset);
 	}
 
 	printk("Filling the Trap Frame (still in Kernel Mode).\n");
 
-	TrapFrame *tf = &current->tf;
-	set_tss_esp0((int)current->kstack + KSTACK_SIZE);
+	TrapFrame *tf = &current_process->tf;
+	set_tss_esp0((int)current_process->kstack + KSTACK_SIZE);
 	tf->eax = 0; tf->ebx = 1; tf->ecx = 2; tf->edx = 3;
-	uint32_t eflags = read_eflags();
-	tf->eflags = eflags | FL_IF;
+	tf->eflags = read_eflags() | FL_IF;
 	tf->eip = elf->e_entry;
 	tf->esp = USER_STACK_TOP;
 
-	page_alloc(USER_STACK_TOP - USER_STACK_SIZE, USER_STACK_SIZE, current);
+	printk("Allocating User Stack.\n");
+	page_alloc(tf->esp - USER_STACK_SIZE, USER_STACK_SIZE, current_process);
+
+	lcr3(va2pa(current_process->pdir));
+
+	printk("Already loaded new CR3.\n");
 
 	printk("Ready to enter the game (User Mode).\n");
 
-	lcr3(va2pa(current->pdir));
+	printk("After entering the User Mode, all outputs will have a header.\n");
 
 	asm volatile("movl %0, %%esp" : :"a"((int)tf));
 	asm volatile("popa");
