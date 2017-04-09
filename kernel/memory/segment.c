@@ -19,7 +19,7 @@ void init_seg() {
 	}
 }
 
-SegMan * Get_free_seg() {
+SegMan *get_free_seg() {
 	assert(!list_empty(&free_seg));
 	ListHead *new_seg = free_seg.next;
 	list_del(new_seg);
@@ -27,7 +27,9 @@ SegMan * Get_free_seg() {
 	return list_entry(new_seg, SegMan, list);
 }
 
-void Free_seg(SegMan *val) {
+/* Unused. */
+
+void remove_seg(SegMan *val) {
 	list_del(&val->list);
 	list_add_after(&free_seg, &val->list);
 }

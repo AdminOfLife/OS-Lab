@@ -8,8 +8,8 @@ extern SegDesc gdt[NR_SEGMENTS];
 
 void init_seg();
 void init_page();
-SegMan* Get_free_seg();
-uint32_t Get_free_pg();
+SegMan* get_free_seg();
+uint32_t get_free_pg();
 void set_segment(SegDesc *ptr, uint32_t pl, uint32_t type, uint32_t base, uint32_t limit); 
 
 void init_memory() {
@@ -18,7 +18,7 @@ void init_memory() {
 }
 
 uint32_t seg_alloc(uint32_t vaddr, PCB* current) {
-	SegMan *tmp = Get_free_seg();
+	SegMan *tmp = get_free_seg();
 	uint32_t offset = 0;
 	set_segment(&gdt[tmp->cs], DPL_USER, SEG_EXECUTABLE | SEG_READABLE, offset, tmp->limit);
 	set_segment(&gdt[tmp->ds], DPL_USER, SEG_WRITABLE, offset, tmp->limit);
@@ -33,7 +33,7 @@ uint32_t page_alloc(uint32_t vaddr, uint32_t size, PCB* current) {
 	uint32_t pdir_idx;
 	for(pdir_idx = vaddr / PTSIZE; pdir_idx < (vaddr + size + PTSIZE) / PTSIZE; ++ pdir_idx) {
 		if(pdir[pdir_idx] != 0x0) continue;
-		pdir[pdir_idx] = Get_free_pg() | 0x7;
+		pdir[pdir_idx] = get_free_pg() | 0x7;
 		printk("Allocating Pages: %x %x\n", pdir[pdir_idx] - 0x7, *(int *)(pdir[pdir_idx] - 0x7) - 0x7);
 	}
 	uint32_t pa = ((*(int *)(current->pdir[vaddr/PTSIZE] - 0x7)) - 0x7) + (vaddr & ((1 << 22) - 1));
@@ -58,7 +58,7 @@ void readprog(uint32_t vaddr, uint32_t fsize, uint32_t msize, PCB *current, unsi
 		}
 		fsize -= PTSIZE;
 	}
-	pdir_idx ++;
+	pdir_idx++;
 	for(; pdir_idx < (vaddr + msize + PTSIZE) / PTSIZE; ++ pdir_idx) {
 		paddr = (*(int *)(current->pdir[pdir_idx] & (~0x7))) & (~0x7);
 		for(i = (unsigned char *)paddr; i < (unsigned char *)(paddr + PTSIZE); *i ++ = 0);

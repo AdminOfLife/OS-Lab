@@ -59,6 +59,7 @@ void wait_input() {
 				seek = back_space(seek);
 			}
 		}
+		else if(!c_translated) continue;
 		else if (len < MAX_LEN - 1) {
 			char tmp_string[2] = {c_translated, 0};
 			ans[len] = c_translated;
@@ -69,8 +70,9 @@ void wait_input() {
 		if (c_translated == '\n') break;
 	}
 	// printk("%d\n", len);
-	len--;
+	if (len) len--;
 	ans[len] = 0;
 	process_ans();
-	printk("The input is \"%s.\"\n", ans);
+	if (len) printk("The input is \"%s.\"\n", ans);
+	else printk("The user did not enter anything\n");
 }

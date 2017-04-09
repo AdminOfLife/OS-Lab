@@ -84,7 +84,7 @@ void init_page() {
 	}
 }
 
-uint32_t Get_free_pg() {
+uint32_t get_free_pg() {
 	assert(!list_empty(&free_pg));
 	ListHead *new_pg = free_pg.next;
 	list_del(new_pg);
@@ -92,7 +92,7 @@ uint32_t Get_free_pg() {
 	return list_entry(new_pg, PgMan, list)->addr;
 }
 
-void Free_pg(PgMan *val) {
+void remove_pg(PgMan *val) {
 	list_del(&val->list);
 	list_add_after(&free_pg, &val->list);
 }
