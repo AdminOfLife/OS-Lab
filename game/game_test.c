@@ -1,7 +1,5 @@
-#include <usr_inc/stdio.h>
-
 int game_test() {
-	printk("233\n");
+	asm("hlt");
 	while (1);
 	return 0;
 }
