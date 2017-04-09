@@ -1,8 +1,11 @@
 *
 !*.*
 !*/
-!obj/
+!COPYRIGHT
+!Makefile
 
+obj/
 .DS_Store
 *.o
 *.a
+*.bin
