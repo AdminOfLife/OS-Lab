@@ -2,7 +2,7 @@
 #define __HAL_H__
 
 #include "common.h"
-#include "adt/list.h"
+#include "list.h"
 
 #define DEV_READ 1
 #define DEV_WRITE 2

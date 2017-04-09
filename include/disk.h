@@ -1,5 +1,5 @@
-#ifndef KERN_INC_DISK
-#define KERN_INC_DISK
+#ifndef __DISK_H__
+#define __DISK_H__
 
 #include <include/x86.h>
 

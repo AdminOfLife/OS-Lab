@@ -13,5 +13,4 @@ void V(Sem *);
 //void unlock();
 void init_sem(Sem *,int);
 
-
 #endif
