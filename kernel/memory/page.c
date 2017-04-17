@@ -54,10 +54,10 @@ void set_user_page(PCB *current) {
 	pte_t *ptable = (pte_t *)va2pa(uptable);
 
 	for (pdir_idx = 0; pdir_idx < 0x400000 / PTSIZE; pdir_idx++) {
-		pdir[pdir_idx] = (pde_t)(&ptable[pdir_idx * NPDENTRIES]) | PTE_P | PTE_W;
-		pdir[pdir_idx + KERNBASE / PTSIZE] = (pde_t)(&ptable[pdir_idx * NPDENTRIES]) | PTE_P | PTE_W;
+		pdir[pdir_idx] = (pde_t)(&ptable[pdir_idx * NPDENTRIES]) | 0x7;
+		pdir[pdir_idx + KERNBASE / PTSIZE] = (pde_t)(&ptable[pdir_idx * NPDENTRIES]) | 0x7;
 	}
-	printk("Current User Page Dir: 0x%x\n", va2pa(pdir));
+//	printk("Current User Page Dir: 0x%x\n", va2pa(pdir));
 }
 
 void init_page() {

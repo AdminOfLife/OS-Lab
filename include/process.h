@@ -11,15 +11,24 @@
 #define NR_PCB 16 
 
 typedef struct PCB{
-	TrapFrame tf;
+	TrapFrame *tf;
 	uint8_t kstack[KSTACK_SIZE];
-	bool p;
 	__attribute__((__aligned__(PGSIZE)))
 	pde_t pdir[NPDENTRIES];
 	ListHead list;
+	uint32_t time, pid;
 } __attribute__((packed)) PCB;
 
 void init_process();
 PCB* new_process();
+
+void free_process(PCB *val);
+
+void ready_pc(PCB *val);
+void block_pc(PCB *val);
+void run_pc(PCB *val);
+
+void process_info();
+void schedule(TrapFrame *tf);
 
 #endif

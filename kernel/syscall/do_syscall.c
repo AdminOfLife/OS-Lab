@@ -6,6 +6,7 @@
 #include <include/stdio.h>
 #include <include/mmu.h>
 #include <include/x86.h>
+#include <include/syscallid.h>
 
 
 bool check_new_key();
@@ -15,8 +16,8 @@ void update_cursor(int, int);
 int print_char(int, char, int);
 void update_time(long start_time);
 long get_jiffy();
-
-enum {CHECK_KEY, GET_KEY, BACK_SPACE, PRINT_CHAR, UPDATE_CURSOR, PRINT_TO_TERMINAL, UPDATE_TIME, GET_TIME};
+int fork();
+uint32_t get_pid();
 
 void do_syscall(TrapFrame *tf) {
 	int return_val = 0;
@@ -29,8 +30,10 @@ void do_syscall(TrapFrame *tf) {
 		case PRINT_TO_TERMINAL: printk("%c", tf->ecx); break;
 		case UPDATE_TIME: update_time(tf->ecx); break;
 		case GET_TIME: return_val = get_jiffy(); break;
+		case FORK: return_val = fork(); break;
+		case GET_PID: return_val = get_pid(); break;
 		default: panic("Unexpected Sys Call ID: %d\n", tf->eax);
 	}
-	// printk("Return: %d\n", return_val);
+//	printk("Return: %d\n", return_val);
 	tf->eax = return_val;
 }

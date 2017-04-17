@@ -42,7 +42,7 @@ int kern_init() {
 	init_timer();
 	init_keyboard();
 
-	printk("Initialization of Interrupts and Devices Finished.");
+	printk("Initialization of Interrupts and Devices Finished.\n");
 
 	init_process();			// init PCB pointer
 	init_memory();			// init memory organize
@@ -51,13 +51,16 @@ int kern_init() {
 	/* indicates a successful initialization of virtual memory and devices */
 
 	load();					// load program
-
+	// sti();
 	while (1);
 	return 0;
 }
 
 void load() {
+//	process_info();
 	PCB *current_process = new_process();
+	run_pc(current_process);
+	process_info();
 	set_user_page(current_process);
 	struct Elf *elf;
 	struct Proghdr *ph, *eph;
@@ -75,19 +78,21 @@ void load() {
 	eph = ph + elf->e_phnum;
 	for (; ph < eph; ph++) {
 		if(ph->p_type != ELF_PROG_LOAD) continue;
-		// seg_alloc(ph->p_va, current_process);
+		pa = (unsigned char *)seg_alloc(ph->p_va, current_process);
 		pa = (unsigned char *)page_alloc(ph->p_va, ph->p_memsz, current_process);
 		readprog(ph->p_va, ph->p_filesz, ph->p_memsz, current_process, pa, OFFSET_IN_DISK + ph->p_offset);
 	}
 
 	printk("Filling the Trap Frame (still in Kernel Mode).\n");
 
-	TrapFrame *tf = &current_process->tf;
+	TrapFrame *tf = current_process->tf;
 	set_tss_esp0((int)current_process->kstack + KSTACK_SIZE);
 	tf->eax = 0; tf->ebx = 1; tf->ecx = 2; tf->edx = 3;
 	tf->eflags = read_eflags() | FL_IF;
 	tf->eip = elf->e_entry;
 	tf->esp = USER_STACK_TOP;
+
+	// printk("DS: 0x%x\n", tf->ds >> 3);
 
 	printk("Allocating User Stack.\n");
 	page_alloc(tf->esp - USER_STACK_SIZE, USER_STACK_SIZE, current_process);
@@ -95,19 +100,18 @@ void load() {
 	lcr3(va2pa(current_process->pdir));
 
 	printk("Already loaded new CR3.\n");
-
 	printk("Ready to enter the game (User Mode).\n");
-
 	printk("After entering the User Mode, all outputs will have a header.\n");
 
 	asm volatile("movl %0, %%esp" : :"a"((int)tf));
 	asm volatile("popa");
 	asm volatile("addl %0, %%esp" : :"a"(8));
 
-	asm volatile("mov 24(%esp), %eax\n\t"
-				 "movl %eax, %ds\n\t"
-				 "movl %eax, %es\n\t"
-				 "movl %eax, %fs\n\t"
-				 "movl %eax, %gs\n\t");
+//	asm volatile("mov $0x2b, %eax\n\t"
+//				 "movl %eax, %ds\n\t"
+//				 "movl %eax, %es\n\t"
+//				 "movl %eax, %fs\n\t"
+//				 "movl %eax, %gs\n\t");
+
 	asm volatile("iret");
 }

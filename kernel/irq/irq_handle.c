@@ -1,5 +1,6 @@
 #include <include/common.h>
 #include <include/irq.h>
+#include <include/process.h>
 
 #define NR_IRQ_HANDLE 32
 #define NR_HARD_INTR 16 /* At most 16 kinds of hardware interrupts. */
@@ -12,6 +13,8 @@ struct IRQ_t {
 static struct IRQ_t handle_pool[NR_IRQ_HANDLE];
 static struct IRQ_t *handles[NR_HARD_INTR]; // handles is an array of lists
 static int handle_count = 0;
+
+extern long jiffy;
 
 void do_syscall(TrapFrame *tf);
 
@@ -28,7 +31,7 @@ void add_irq_handle(int irq, void (*func)(void) ) {
 	handles[irq] = ptr;
 }
 
-void irq_handle(TrapFrame *tf) {
+int irq_handle(TrapFrame *tf) {
 	//printk("irq_handle()\n");
 
 	int irq = tf->irq;
@@ -47,4 +50,9 @@ void irq_handle(TrapFrame *tf) {
 			f = f->next;
 		}
 	}
+	if (irq == 1000 && jiffy % 100 == 0) {
+		schedule(tf);
+		return 1;
+	}
+	return 0;
 }

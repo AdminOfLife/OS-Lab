@@ -1,7 +1,7 @@
 ID  := 151242041
 
 SUFFIX  :=
-# SUFFIX  := _linux
+SUFFIX  := _linux
 # Specified on macOS
 # where cross-platform compilers are used
 
@@ -24,7 +24,7 @@ CFLAGS += -fno-stack-protector
 QEMU_OPTIONS := -serial stdio
 #QEMU_OPTIONS += -d int
 QEMU_OPTIONS += -monitor telnet:127.0.0.1:1111,server,nowait
-QEMU_OPTIONS += -m 512
+QEMU_OPTIONS += -m 512 -no-reboot
 
 QEMU_DEBUG_OPTIONS := -S
 QEMU_DEBUG_OPTIONS += -s

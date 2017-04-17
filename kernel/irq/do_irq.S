@@ -25,17 +25,29 @@
 
 .globl asm_do_irq
 .extern irq_handle
+.extern running
 
 # The follow code is *VERY* important for interrupts and exceptions handling.
 # You should make yourself understand it clearly.
 
 asm_do_irq:
+	cli
+	
 	pushal
 
-	pushl %esp		# ???
+	pushl %esp
 	call irq_handle
-	
 	addl $4, %esp
+
+	cmpl $0, %eax
+	je ret
+
+	movl running, %eax
+	movl (%eax), %esp
+	
+ret:
 	popal
 	addl $8, %esp
+
+	sti
 	iret
