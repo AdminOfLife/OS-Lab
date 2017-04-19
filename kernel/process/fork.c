@@ -6,7 +6,7 @@
 #include <include/process.h>
 
 void set_user_page(PCB *);
-uint32_t get_free_pg();
+PgMan* get_free_pg();
 
 extern PCB *running;
 extern PCB *empty;
@@ -17,7 +17,7 @@ int fork() {
 
 	newp->tf = (TrapFrame *)((int)(newp->kstack) + (int)(running->tf) - (int)(running->kstack));
 	memcpy(newp->kstack, running->kstack, sizeof newp->kstack);
-	set_user_page(newp);
+//	set_user_page(newp);
 
 //	printk("Begin to Copy\n");
 
@@ -32,13 +32,19 @@ int fork() {
 			break;
 		}
 	}
+	uint32_t tmp_page_dir = running->pdir[tmp];
 
 	for (i = 0; i < NPDENTRIES; i++) {
 		if((running->pdir[i] & PTE_P) && !(newp->pdir[i] & PTE_P)) {
 //			printk("%x %x %x\n", tmp, running->pdir[i], newp->pdir[i]);
 //			printk("Copying the %d-th Page Dir.\n", i);
 
-			newp->pdir[i] = get_free_pg() | PTE_P | PTE_W | PTE_U;
+			// newp->pdir[i] = get_free_pg() | PTE_P | PTE_W | PTE_U;
+
+			PgMan *current_page = get_free_pg();
+			newp->page_man[newp->num_page_man++] = current_page;
+			newp->pdir[i] = current_page->addr | PTE_P | PTE_W | PTE_U;
+
 			running->pdir[tmp] = newp->pdir[i];
 
 			va = i << 22;
@@ -56,7 +62,7 @@ int fork() {
 		}
 	}
 
-	running->pdir[tmp] = 0;
+	running->pdir[tmp] = tmp_page_dir;
 
 //	printk("Fork Return.\n");
 

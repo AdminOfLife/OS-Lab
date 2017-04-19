@@ -60,8 +60,8 @@ void load() {
 //	process_info();
 	PCB *current_process = new_process();
 	run_pc(current_process);
-	process_info();
-	set_user_page(current_process);
+//	process_info();
+//	set_user_page(current_process);
 	struct Elf *elf;
 	struct Proghdr *ph, *eph;
 	unsigned char *pa;

@@ -3,13 +3,15 @@
 #include <include/mmu.h>
 #include <include/process.h>
 #include <include/disk.h>
+#include <include/list.h>
+
 
 extern SegDesc gdt[NR_SEGMENTS];
 
 void init_seg();
 void init_page();
 SegMan* get_free_seg();
-uint32_t get_free_pg();
+PgMan* get_free_pg();
 void set_segment(SegDesc *ptr, uint32_t pl, uint32_t type, uint32_t base, uint32_t limit); 
 
 void init_memory() {
@@ -35,7 +37,10 @@ uint32_t page_alloc(uint32_t vaddr, uint32_t size, PCB* current) {
 	uint32_t pdir_idx;
 	for(pdir_idx = vaddr / PTSIZE; pdir_idx < (vaddr + size + PTSIZE) / PTSIZE; ++ pdir_idx) {
 		if(pdir[pdir_idx] != 0x0) continue;
-		pdir[pdir_idx] = get_free_pg() | 0x7;
+//		pdir[pdir_idx] = get_free_pg() | 0x7;
+		PgMan *current_page = get_free_pg();
+		current->page_man[current->num_page_man++] = current_page;
+		pdir[pdir_idx] = current_page->addr | PTE_P | PTE_W | PTE_U;
 		printk("Allocating Pages: %x %x\n", pdir[pdir_idx] - 0x7, *(int *)(pdir[pdir_idx] - 0x7) - 0x7);
 	}
 	uint32_t pa = ((*(int *)(current->pdir[vaddr/PTSIZE] - 0x7)) - 0x7) + (vaddr & ((1 << 22) - 1));

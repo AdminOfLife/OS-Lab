@@ -5,3 +5,7 @@
 uint32_t get_pid() {
 	return syscall(GET_PID);
 }
+
+void exit() {
+	syscall(EXIT_PROC);
+}

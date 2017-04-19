@@ -15,6 +15,7 @@ typedef struct {
 typedef struct {
 	uint32_t addr;
 	ListHead list;
+	uint32_t ref_count;
 } PgMan;
 
 #endif
