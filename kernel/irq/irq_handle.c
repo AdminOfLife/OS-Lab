@@ -1,9 +1,13 @@
 #include <include/common.h>
 #include <include/irq.h>
 #include <include/process.h>
+#include <include/syscallid.h>
+
 
 #define NR_IRQ_HANDLE 32
 #define NR_HARD_INTR 16 /* At most 16 kinds of hardware interrupts. */
+
+#define SCHEDULE_FREQ 10
 
 struct IRQ_t {
 	void (*routine)(void);
@@ -37,8 +41,9 @@ int irq_handle(TrapFrame *tf) {
 	int irq = tf->irq;
 	if (irq == 0x80) {
 		do_syscall(tf);
+		if (tf->eax == PROC_SLEEP) return 1; 
 	}
-	else if(irq == 0xe);	// disk dxception
+	else if(irq == 0xe || irq == 0xd);
 	else if(irq < 1000) panic("Unhandled exception. ID = 0x%x!\n", irq);
 	else {
 		int irq_id = irq - 1000;
@@ -50,7 +55,7 @@ int irq_handle(TrapFrame *tf) {
 			f = f->next;
 		}
 	}
-	if (irq == 1000 && jiffy % 100 == 0) {
+	if (irq == 1000 && jiffy % SCHEDULE_FREQ == 0) {
 		schedule(tf);
 		return 1;
 	}

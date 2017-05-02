@@ -76,7 +76,12 @@ void free_process(PCB *val) {
 }
 
 void schedule(TrapFrame *tf) {
-	process_info();
+//	process_info();
+	ListHead *i, *i_;
+	list_foreach_safe(i, i_, &blocked) {
+		if (list_entry(i, PCB, list)->time == 0) ready_pc(list_entry(i, PCB, list));
+		else list_entry(i, PCB, list)->time--;
+	}
 	if (list_empty(&ready))
 		panic("No Ready Processes Available!\n");
 	run_pc(list_entry(ready.next, PCB, list));
@@ -106,4 +111,11 @@ void exit() {
 	PCB *old_running = running;
 	schedule(old_running->tf);
 	free_process(old_running);
+}
+
+void sleep(uint32_t t, TrapFrame *tf) {
+	running->time = t;
+	block_pc(running);
+	running = NULL;
+	schedule(tf);
 }

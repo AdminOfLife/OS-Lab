@@ -19,6 +19,7 @@ long get_jiffy();
 int fork();
 uint32_t get_pid();
 void exit();
+void sleep(uint32_t, TrapFrame*);
 
 void do_syscall(TrapFrame *tf) {
 	int return_val = 0;
@@ -31,9 +32,12 @@ void do_syscall(TrapFrame *tf) {
 		case PRINT_TO_TERMINAL: printk("%c", tf->ecx); break;
 		case UPDATE_TIME: update_time(tf->ecx); break;
 		case GET_TIME: return_val = get_jiffy(); break;
-		case FORK: return_val = fork(); break;
+		case FORK:
+			return_val = fork();
+			break;
 		case GET_PID: return_val = get_pid(); break;
 		case EXIT_PROC: exit(); break;
+		case PROC_SLEEP: sleep(tf->ecx, tf); break;
 		default: panic("Unexpected Sys Call ID: %d\n", tf->eax);
 	}
 //	printk("Return: %d\n", return_val);

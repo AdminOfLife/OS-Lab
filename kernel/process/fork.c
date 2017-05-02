@@ -17,6 +17,7 @@ int fork() {
 
 	newp->tf = (TrapFrame *)((int)(newp->kstack) + (int)(running->tf) - (int)(running->kstack));
 	memcpy(newp->kstack, running->kstack, sizeof newp->kstack);
+	newp->tf->eax = 0; // Set the return value of the new process to 0
 //	set_user_page(newp);
 
 //	printk("Begin to Copy\n");

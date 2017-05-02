@@ -9,3 +9,7 @@ uint32_t get_pid() {
 void exit() {
 	syscall(EXIT_PROC);
 }
+
+void sleep(uint32_t t) {
+	syscall(PROC_SLEEP, t);
+}
