@@ -1,2 +1,2 @@
-// define GAME
-#define TEST_FORK
+#define GAME
+// #define TEST_FORK
