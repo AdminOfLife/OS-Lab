@@ -49,8 +49,11 @@ void wait_input() {
 	print_string(BLACK_AND_WHITE, "> ");
 	// while (1);
 	while (1) {
-		while (!check_new_key())
+		bool tmp = check_new_key();
+		while (!tmp) {
 			update_time(start_time);
+			tmp = check_new_key();
+		}
 		c = get_key();
 		char c_translated = look_up[(int)c];
 		if (c_translated == BACKSPACE) {

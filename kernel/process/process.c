@@ -3,6 +3,7 @@
 #include <include/assert.h>
 #include <include/x86.h>
 #include <include/string.h>
+#include <usr_inc/semaphore.h>
 
 
 PCB pcb[NR_PCB];
@@ -11,6 +12,7 @@ ListHead unused_pcb;
 PCB *empty;
 ListHead ready, blocked;
 PCB *running = NULL;
+PCB *prev_running = NULL;
 
 uint32_t pid_cc;
 
@@ -24,16 +26,17 @@ void ready_pc(PCB *val) {
 	list_add_after(&ready, &val->list);
 }
 
-/* TODO: Add time. */
 void block_pc(PCB *val) {
-	list_del(&val->list);
+	if (val != running) list_del(&val->list);
 	list_add_after(&blocked, &val->list);
 }
 
 void run_pc(PCB *val) {
 	if (running != NULL) list_add_before(&ready, &running->list);
 	list_del(&val->list);
+	if (running != NULL) prev_running = running;
 	running = val;
+//	prev_running = running;
 }
 
 void init_process() {
@@ -77,13 +80,19 @@ void free_process(PCB *val) {
 
 void schedule(TrapFrame *tf) {
 //	process_info();
+//	printk("%x\n", tf->eip);
 	ListHead *i, *i_;
 	list_foreach_safe(i, i_, &blocked) {
-		if (list_entry(i, PCB, list)->time == 0) ready_pc(list_entry(i, PCB, list));
-		else list_entry(i, PCB, list)->time--;
+		if (list_entry(i, PCB, list)->time == 0)
+			ready_pc(list_entry(i, PCB, list));
+		else if(list_entry(i, PCB, list)->time == -1)
+			continue;
+		else
+			list_entry(i, PCB, list)->time--;
 	}
 	if (list_empty(&ready))
-		panic("No Ready Processes Available!\n");
+//		panic("No Ready Processes Available!\n");
+		return;
 	run_pc(list_entry(ready.next, PCB, list));
 //	list_del(&running->list);
 	set_tss_esp0((int)running->kstack + KSTACK_SIZE);
@@ -113,9 +122,21 @@ void exit() {
 	free_process(old_running);
 }
 
-void sleep(uint32_t t, TrapFrame *tf) {
+void sleep(int t, TrapFrame *tf) {
+//	printk("Put to Sleep: %d\n", running->pid);
 	running->time = t;
 	block_pc(running);
+	prev_running = running;
 	running = NULL;
 	schedule(tf);
+}
+
+void wakeup_sem() {
+	ListHead *i, *i_;
+	list_foreach_safe(i, i_, &blocked) {
+		if(list_entry(i, PCB, list)->time == -1) {
+			list_entry(i, PCB, list)->time = 0;
+			ready_pc(list_entry(i, PCB, list));
+		}
+	}
 }

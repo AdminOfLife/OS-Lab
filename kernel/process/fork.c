@@ -5,6 +5,8 @@
 #include <include/string.h>
 #include <include/process.h>
 
+#define USER_STACK_TOP 0x8000000
+
 void set_user_page(PCB *);
 PgMan* get_free_pg();
 
@@ -74,5 +76,54 @@ int fork() {
 
 //	lcr3(va2pa(newp->pdir));
 
+	return newp->pid;
+}
+
+int fork_thread() {
+	PCB *newp = new_process();
+	uint32_t i, va, nva;
+
+	newp->tf = (TrapFrame *)((int)(newp->kstack) + (int)(running->tf) - (int)(running->kstack));
+	memcpy(newp->kstack, running->kstack, sizeof newp->kstack);
+	newp->tf->eax = 0; // Set the return value of the new process to 0
+
+	uint32_t tmp;
+
+	for (i = 0; i < NPDENTRIES; i++) {
+		if (!(running->pdir[i] & PTE_P)){
+			tmp = i;
+			break;
+		}
+	}
+	uint32_t tmp_page_dir = running->pdir[tmp];
+
+	printk("%x\n", running->tf->old_esp);
+
+	for (i = 0; i < NPDENTRIES; i++) {
+		if((running->pdir[i] & PTE_P) && !(newp->pdir[i] & PTE_P)) {
+			// 1 || ((running->tf->old_esp >> 22) <= i && 
+			if (i < (USER_STACK_TOP >> 22)) {
+				PgMan *current_page = get_free_pg();
+				newp->page_man[newp->num_page_man++] = current_page;
+				newp->pdir[i] = current_page->addr | PTE_P | PTE_W | PTE_U;
+
+				running->pdir[tmp] = newp->pdir[i];
+
+				va = i << 22;
+				nva = tmp << 22;
+
+				int j;
+				for (j = 0; j < PTSIZE; j++) {
+					*(char *)nva = *(char *)va;
+					nva++;
+					va++;
+				}
+			}
+			else {
+				newp->pdir[i] = running->pdir[i];
+			}
+		}
+	}
+	running->pdir[tmp] = tmp_page_dir;
 	return newp->pid;
 }

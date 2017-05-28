@@ -7,6 +7,7 @@
 #include <include/mmu.h>
 #include <include/x86.h>
 #include <include/syscallid.h>
+#include <usr_inc/semaphore.h>
 
 
 bool check_new_key();
@@ -17,9 +18,11 @@ int print_char(int, char, int);
 void update_time(long start_time);
 long get_jiffy();
 int fork();
+int fork_thread();
 uint32_t get_pid();
 void exit();
-void sleep(uint32_t, TrapFrame*);
+void sleep(int, TrapFrame*);
+int sem(sem_t *sem, int val);
 
 void do_syscall(TrapFrame *tf) {
 	int return_val = 0;
@@ -35,9 +38,13 @@ void do_syscall(TrapFrame *tf) {
 		case FORK:
 			return_val = fork();
 			break;
+		case FORK_T:
+			return_val = fork_thread();
+			break;
 		case GET_PID: return_val = get_pid(); break;
 		case EXIT_PROC: exit(); break;
 		case PROC_SLEEP: sleep(tf->ecx, tf); break;
+		case SEM: return_val = sem((sem_t *)(tf->ecx), tf->edx); break;
 		default: panic("Unexpected Sys Call ID: %d\n", tf->eax);
 	}
 //	printk("Return: %d\n", return_val);

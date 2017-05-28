@@ -3,4 +3,6 @@
 
 int fork();
 
+int fork_thread();
+
 #endif

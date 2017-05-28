@@ -1,6 +1,6 @@
 ID  := 151242041
 
-SUFFIX  :=
+# SUFFIX  :=
 SUFFIX  := _linux
 # Specified on macOS
 # where cross-platform compilers are used

@@ -7,7 +7,7 @@
 #define NR_IRQ_HANDLE 32
 #define NR_HARD_INTR 16 /* At most 16 kinds of hardware interrupts. */
 
-#define SCHEDULE_FREQ 10
+#define SCHEDULE_FREQ 1
 
 struct IRQ_t {
 	void (*routine)(void);
@@ -19,6 +19,7 @@ static struct IRQ_t *handles[NR_HARD_INTR]; // handles is an array of lists
 static int handle_count = 0;
 
 extern long jiffy;
+extern PCB* running;
 
 void do_syscall(TrapFrame *tf);
 
@@ -40,8 +41,9 @@ int irq_handle(TrapFrame *tf) {
 
 	int irq = tf->irq;
 	if (irq == 0x80) {
+		int syscall_id = tf->eax;
 		do_syscall(tf);
-		if (tf->eax == PROC_SLEEP) return 1; 
+		if (syscall_id == PROC_SLEEP) return 1;
 	}
 	else if(irq == 0xe || irq == 0xd);
 	else if(irq < 1000) panic("Unhandled exception. ID = 0x%x!\n", irq);

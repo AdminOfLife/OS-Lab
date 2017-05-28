@@ -18,7 +18,8 @@ typedef struct PCB{
 	PgMan *page_man[NPTENTRIES];
 	int num_page_man;
 	ListHead list;
-	uint32_t time, pid;
+	int time;
+	uint32_t pid;
 } __attribute__((packed)) PCB;
 
 void init_process();

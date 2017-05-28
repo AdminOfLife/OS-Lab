@@ -26,6 +26,7 @@
 .globl asm_do_irq
 .extern irq_handle
 .extern running
+.extern prev_running
 
 # The follow code is *VERY* important for interrupts and exceptions handling.
 # You should make yourself understand it clearly.
@@ -41,6 +42,9 @@ asm_do_irq:
 
 	cmpl $0, %eax
 	je ret
+
+	movl prev_running, %eax
+	movl %esp, (%eax)
 
 	movl running, %eax
 	movl (%eax), %esp

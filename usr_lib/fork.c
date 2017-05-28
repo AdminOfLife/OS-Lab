@@ -5,3 +5,7 @@
 int fork() {
 	return syscall(FORK);
 }
+
+int fork_thread() {
+	return syscall(FORK_T);
+}

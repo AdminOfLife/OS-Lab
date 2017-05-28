@@ -10,6 +10,6 @@ void exit() {
 	syscall(EXIT_PROC);
 }
 
-void sleep(uint32_t t) {
+void sleep(int t) {
 	syscall(PROC_SLEEP, t);
 }

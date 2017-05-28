@@ -7,6 +7,6 @@
 
 uint32_t get_pid();
 void exit();
-void sleep(uint32_t);
+void sleep(int);
 
 #endif
