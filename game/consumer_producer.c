@@ -55,6 +55,9 @@ int consumer_producer() {
 	}
 	else {
 		consumer();
+		sem_destroy(&mutex);
+		sem_destroy(&full);
+		sem_destroy(&empty);
 	}
 	while (1)
 		;
