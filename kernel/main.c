@@ -6,8 +6,9 @@
 #include <include/process.h>
 #include <include/disk.h>
 #include <include/memory.h>
+#include <include/stdio.h>
 
-#define OFFSET_IN_DISK (1000 * 1024)
+
 #define USER_STACK_TOP 0x8000000
 
 void set_tss_esp0(int);
@@ -18,7 +19,7 @@ void set_kern_page();
 void set_kern_segment();
 uint32_t seg_alloc(uint32_t, PCB*);
 uint32_t page_alloc(uint32_t, uint32_t, PCB*);
-void readprog(uint32_t, uint32_t, uint32_t, PCB*, unsigned char *, uint32_t);
+void readprog(uint32_t, uint32_t, uint32_t, PCB*, unsigned char *, const int, uint32_t);
 
 void init_serial();
 void init_i8259();
@@ -47,6 +48,8 @@ int kern_init() {
 	init_process();			// init PCB pointer
 	init_memory();			// init memory organize
 
+	init_fs();
+
 	print_char(0, 'V', 0x0f);
 	/* indicates a successful initialization of virtual memory and devices */
 
@@ -70,9 +73,12 @@ void load() {
 
 	printk("Loading the game from the disk\n");
 
+	int fd = fs_open("game.bin", R_FLAG | B_FLAG);
+	fs_read(fd, elf, 4096);
+
 	printk("ELF Magical Number: 0x%x, should be equal to 0x464c457f\n", *elf);
 
-	readseg((unsigned char*)elf, 4096, OFFSET_IN_DISK);
+//	readseg((unsigned char*)elf, 4096, OFFSET_IN_DISK);
 
 	ph = (struct Proghdr*)((uint8_t *)elf + elf->e_phoff);
 	eph = ph + elf->e_phnum;
@@ -80,7 +86,7 @@ void load() {
 		if(ph->p_type != ELF_PROG_LOAD) continue;
 		pa = (unsigned char *)seg_alloc(ph->p_va, current_process);
 		pa = (unsigned char *)page_alloc(ph->p_va, ph->p_memsz, current_process);
-		readprog(ph->p_va, ph->p_filesz, ph->p_memsz, current_process, pa, OFFSET_IN_DISK + ph->p_offset);
+		readprog(ph->p_va, ph->p_filesz, ph->p_memsz, current_process, pa, fd, ph->p_offset);
 	}
 
 	printk("Filling the Trap Frame (still in Kernel Mode).\n");

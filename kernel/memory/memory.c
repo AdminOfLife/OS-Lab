@@ -4,6 +4,7 @@
 #include <include/process.h>
 #include <include/disk.h>
 #include <include/list.h>
+#include <include/stdio.h>
 
 
 extern SegDesc gdt[NR_SEGMENTS];
@@ -48,7 +49,7 @@ uint32_t page_alloc(uint32_t vaddr, uint32_t size, PCB* current) {
 	return pa;
 }
 
-void readprog(uint32_t vaddr, uint32_t fsize, uint32_t msize, PCB *current, unsigned char * pa, uint32_t offset) {
+void readprog(uint32_t vaddr, uint32_t fsize, uint32_t msize, PCB *current, unsigned char * pa, const int fd, uint32_t offset) {
 	fsize += vaddr & (PTSIZE - 1);
 	msize += vaddr & (PTSIZE - 1);
 	vaddr &= ~(PTSIZE - 1);
@@ -57,8 +58,9 @@ void readprog(uint32_t vaddr, uint32_t fsize, uint32_t msize, PCB *current, unsi
 	for(pdir_idx = vaddr / PTSIZE; pdir_idx < (vaddr + msize + PTSIZE) / PTSIZE; pdir_idx++) {
 		paddr = (*(int *)(current->pdir[pdir_idx] & (~0x7))) & (~0x7);
 		// printk("%x %x %x %x\n", pdir_idx, current->pdir[pdir_idx], paddr, offset + (pdir_idx - vaddr / PTSIZE) * PTSIZE);
-		readseg((unsigned char *)(paddr), 
-					PTSIZE, offset + (pdir_idx - vaddr / PTSIZE) * PTSIZE);
+		fs_lseek(fd, offset + (pdir_idx - vaddr / PTSIZE) * PTSIZE, SEEK_SET);
+		fs_read(fd, (uint8_t *)(paddr), PTSIZE);
+//		readseg((unsigned char *)(paddr), PTSIZE, offset + (pdir_idx - vaddr / PTSIZE) * PTSIZE);
 		if(PTSIZE > (int)fsize) {
 			for(i = (unsigned char *)(paddr + fsize); i < (unsigned char *)(paddr + PTSIZE); *i ++ = 0);
 			break;

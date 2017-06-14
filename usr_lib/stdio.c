@@ -64,3 +64,23 @@ static void out_string(char *s) {
 		s++;
 	}
 }
+
+int fs_open(const char *pathname, int flags) {
+	return syscall(FOPEN, pathname, flags);
+}
+
+int fs_read(const int fd, void *buf, int len) {
+	return syscall(FREAD, fd, buf, len);
+}
+
+int fs_write(int fd, void *buf, int len) {
+	return syscall(FREAD, fd, buf, len);
+}
+
+int fs_lseek(int fd, int offset, int whence) {
+	return syscall(FSEEK, fd, offset, whence);
+}
+
+int fs_close(int fd) {
+	return syscall(FCLOSE, fd);
+}

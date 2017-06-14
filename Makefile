@@ -79,12 +79,13 @@ GAME_S := $(shell find $(GAME_DIR) -name "*.S")
 GAME_O := $(GAME_C:%.c=$(OBJ_DIR)/%.o)
 GAME_O += $(GAME_S:%.S=$(OBJ_DIR)/%.o)
 
+DISK_TOOLS := disk
 
-$(IMAGE): $(BOOT) $(KERNEL) $(GAME)
-	# @$(DD) if=/dev/zero of=$(IMAGE) count=10000		 > /dev/null
-	# @$(DD) if=$(BOOT) of=$(IMAGE) conv=notrunc		  > /dev/null
-	# @$(DD) if=$(KERNEL) of=$(IMAGE) seek=1 conv=notrunc > /dev/null
-	@cat $(BOOT) $(KERNEL) $(GAME) > $(IMAGE)
+
+$(IMAGE): $(BOOT) $(KERNEL) $(GAME) $(TOOLS)
+	@make tools
+	@./copy2myfs NULL out $(KERNEL) $(GAME) game/settings.txt
+	@cat $(BOOT) out > $(IMAGE)
 
 # kernel and Bootloader
 $(BOOT): $(BOOT_O)
@@ -104,7 +105,7 @@ $(OBJ_BOOT_DIR)/%.o: $(BOOT_DIR)/%.c
 $(KERNEL): $(KERNEL_LD_SCRIPT)
 $(KERNEL): $(KERNEL_O) $(LIB_O)
 	$(LD) -m elf_i386 -T $(KERNEL_LD_SCRIPT) -nostdlib -o $@ $^ $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
-	@perl genkern.pl $@
+	# @perl genkern.pl $@
 
 $(GAME): $(GAME_LD_SCRIPT)
 $(GAME): $(GAME_O) $(USR_LIB_O)
@@ -167,6 +168,12 @@ clean:
 	@rm -rf $(KERNEL)  2> /dev/null
 	@rm -rf $(GAME)   2> /dev/null
 	@rm -rf $(IMAGE)   2> /dev/null
+	@rm -rf out copy2myfs formatter read_myfs 2> /dev/null
 
 submit:
 	@cd .. && tar cvj $(shell pwd | grep -o '[^/]*$$') > $(ID).tar.bz2
+
+tools:
+	@gcc disk/copy2myfs.c -o copy2myfs
+	@gcc disk/formatter.c -o formatter
+	@gcc disk/read_myfs.c -o read_myfs

@@ -1,0 +1,1 @@
+allow_cheat: false

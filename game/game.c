@@ -43,8 +43,18 @@ void print_string(int color, char *st);
 void wait_input();
 
 long start_time;
+char buf[512 + 1];
+int allow_cheat;
 
 void game() {
+	int fd = fs_open("settings.txt", R_FLAG);
+	fs_read(fd, buf, 512);
+	if (buf[13] == 't') {
+		allow_cheat = 1;
+	}
+
+	printk("%s\n", buf);
+
 	start_time = get_time();
 	printk("Game Start!\n");
 	print_string(BLACK_AND_WHITE, remaining_time);
@@ -58,8 +68,13 @@ void game() {
 				break;
 			}
 			else if (strcmp(ans, cheat) == 0) {
-				print_string(BLACK_AND_WHITE, answers_print_ver[i]);
-				break;
+				if (allow_cheat) {
+					print_string(BLACK_AND_WHITE, answers_print_ver[i]);
+					break;
+				}
+				else {
+					print_string(BLACK_AND_WHITE, "Cheat not allowed.\n");
+				}
 			}
 			else print_string(BLACK_AND_WHITE, answer_wrong);
 		}

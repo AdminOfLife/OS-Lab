@@ -45,6 +45,11 @@ void do_syscall(TrapFrame *tf) {
 		case EXIT_PROC: exit(); break;
 		case PROC_SLEEP: sleep(tf->ecx, tf); break;
 		case SEM: return_val = sem((sem_t *)(tf->ecx), tf->edx); break;
+		case FOPEN:  return_val = fs_open((char *)(tf->ecx), tf->edx);           break;
+		case FREAD:  return_val = fs_read(tf->ecx, (void *)(tf->edx), tf->ebx);  break;
+		case FWRITE: return_val = fs_write(tf->ecx, (void *)(tf->edx), tf->ebx); break;
+		case FSEEK:  return_val = fs_lseek(tf->ecx, tf->edx, tf->ecx);           break;
+		case FCLOSE: return_val = fs_close(tf->ecx);                             break;
 		default: panic("Unexpected Sys Call ID: %d\n", tf->eax);
 	}
 //	printk("Return: %d\n", return_val);
